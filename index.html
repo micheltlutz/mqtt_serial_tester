@@ -1,7 +1,68 @@
+<!doctype html>
 <html>
+<head>
+  <title>Serial Sender</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+  <style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font: 13px Helvetica, Arial; }
+  form { background: #f0f0f0; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+  form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+  form button { width: 9%; background: #16a085; color: #f0f0f0; border: none; padding: 10px; }
+  #messages { list-style-type: none; margin: 0; margin-bottom: 60px; padding: 0; }
+  #messages li { padding: 5px 10px; }
+  #messages li:nth-child(odd) { background: #eee; }
+  </style>
+</head>
 <body>
-  <center>Enviar Comando Serial</center>
-  <input type="text" placeholder="Digite o comando"/>
-  <input type="submit" value="Enviar"/>
+  <center><h1>Enviar Comando Serial</h1></center>
+  <ul id="messages"></ul>
+  <form action="">
+    <!--input id="nick" type="text" placeholder="Digite o nome"/-->
+    <input id="command" type="text" placeholder="Digite o comando"/>
+    <button>Enviar</button>
+  </form>
+  <script>
+  $(function () {
+    var socket = io();
+    /*
+    var nome = "";
+
+    if(nome == ""){
+        $('#messages').hide();
+        $('#command').hide();
+        $('#nick').show();
+    } else {
+      $('#messages').show();
+      $('#command').show();
+      $('#nick').hide();
+    }*/
+    $('form').submit(function(){
+      var msg = $('#command').val();
+      //if(msg != ""){
+        socket.emit('send_serial_command', msg);
+        console.log("HTML msg:", msg);
+        $('#command').val('');
+
+      /*} else {
+        $('#messages').show();
+        $('#command').show();
+        $('#nick').hide();
+        name = $('#nick').val();
+        socket.emit('send_name', $('#nick').val());
+        $('#command').val('');
+        $('#nick').val('');
+      }*/
+      return false;
+    });
+
+    socket.on('send_serial_command', function(msg){
+      console.log("RECEBIDO: ", msg)
+      $('#messages').append($('<li>').text(msg));
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+  });
+</script>
 </body>
 </html>

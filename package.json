@@ -9,9 +9,11 @@
   "author": "Mike",
   "license": "ISC",
   "dependencies": {
+    "express": "^4.15.3",
     "fs": "0.0.1-security",
     "http": "0.0.0",
     "serial": "0.0.9",
-    "serialport": "^5.0.0-beta7"
+    "serialport": "^5.0.0-beta7",
+    "socket.io": "^2.0.3"
   }
 }
