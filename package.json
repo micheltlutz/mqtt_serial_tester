@@ -1,0 +1,17 @@
+{
+  "name": "node_serial_test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mike",
+  "license": "ISC",
+  "dependencies": {
+    "fs": "0.0.1-security",
+    "http": "0.0.0",
+    "serial": "0.0.9",
+    "serialport": "^5.0.0-beta7"
+  }
+}
