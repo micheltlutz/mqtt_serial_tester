@@ -14,6 +14,8 @@
     "http": "0.0.0",
     "serial": "0.0.9",
     "serialport": "^5.0.0-beta7",
-    "socket.io": "^2.0.3"
+    "socket.io": "^2.0.3",
+    "mosca": "^2.5.1",
+    "mqtt": "^2.9.1"
   }
 }
