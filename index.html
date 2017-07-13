@@ -13,10 +13,7 @@
   #messages { list-style-type: none; margin: 0; margin-bottom: 60px; padding: 0; }
   #messages li { padding: 5px 10px; }
   #messages li:nth-child(odd) { background: #eee; }
-  fieldset{
-    padding: 10px;
-    margin: 5px;
-  }
+  fieldset{ padding: 10px; margin: 5px; }
   </style>
 </head>
 <body>
@@ -61,7 +58,6 @@
   </fieldset>
 
   <form action="">
-    <!--input id="nick" type="text" placeholder="Digite o nome"/-->
     <input id="command" type="text" placeholder="Digite o comando"/>
     <button>Enviar</button>
   </form>
@@ -71,7 +67,7 @@
     var protocolo = $('#protocolo').val();
 
     verificaProtocolo(protocolo);
-    
+
     function verificaProtocolo(_protocolo)
     {
       switch (_protocolo) {
@@ -99,7 +95,6 @@
     $('form').submit(function(){
       var msg = $('#command').val();
       var command = {"type": protocolo, "command": msg};
-
       switch (protocolo) {
         case "mqtt":
           command.mqtt_host = $("#mqtt_host").val();
@@ -114,20 +109,14 @@
           alert("Preencha os campos");
         break;
       }
-
-
-
-      console.log("HTML msg:", msg);
       console.log("HTML command:", command);
-
       socket.emit('send_command', command);
-
       $('#command').val('');
       return false;
     });
 
     socket.on('send_command', function(msg){
-      console.log("RECEBIDO: ", msg);
+      console.log("RECEBIDO do socket: ", msg);
       $('#messages').append($('<li>').text(msg));
       window.scrollTo(0, document.body.scrollHeight);
     });

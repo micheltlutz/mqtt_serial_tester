@@ -50,8 +50,7 @@ io.on('connection', function(socket){
       default:
           io.emit('type indefinido. Diposniveis mqtt ou serial', socket.handshake.issued+": " +_command);
     }
-
-
+    
     console.log(socket.handshake.issued+': ' + JSON.stringify(_command));
     io.emit('send_serial_command', socket.handshake.issued+": " +JSON.stringify(_command));
 

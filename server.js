@@ -8,7 +8,6 @@ var client_mqtt = null;
 var serialConnection = null;
 const porta_ws = 3080;
 
-
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
@@ -24,14 +23,8 @@ http.listen(porta_ws, function(){
 
 io.on('connection', function(socket){
   socket.on('send_command', function(_command){
-
-    //console.log('serialConnection: ', serialConnection);
-
-    var obj = _command;
-    console.log('obj: ', obj);
-    console.log('obj.type: ', obj.type);
-    console.log('obj.msg: ', obj.msg);
-    switch(obj.type){
+    console.log('_command: ', _command);
+    switch(_command.type){
       case "mqtt":
         sendMQTT(_command);
         break;
@@ -49,45 +42,40 @@ io.on('connection', function(socket){
 /*SEND SERIAL*/
 function sendSerial(_data)
 {
-  //const sp = "/dev/tty.usbmodem1411";
-  //const baundrate = 9600
-
+    //path = "/dev/tty.usbmodem1411";
+    //baundrate = 9600
     console.log("sendSerial-data", _data);
-
-    /*
-    serialConnection = new SerialPort(sp, {
-      baundrate:baundrate
+    serialConnection = new SerialPort(_data.serial_path, {
+      baundrate:_data.boundrate
     });
-    serialConnection.write(_data);
-
+    serialConnection.write(_data.command);
     serialConnection.on("open", function(){
       console.log("Porta serial aberta");
       //serialConnection.write(_command);
     });
-
     serialConnection.on("data", function(byte){
       console.log("DATA: ", byte);
-      io.emit('send_command', JSON.stringify({"retorno_serial": byte}));
+      io.emit('send_command', JSON.stringify({"retorno_serial": byte.toString()}));
     });
-    */
 }
-
-
 /*SEND MQTT*/
 function sendMQTT(_data)
 {
-  console.log("sendMQTT-data", _data);
-  /*
-  client_mqtt = mqtt.connect('mqtt://192.168.1.128');
+  var host = 'mqtt://'+_data.mqtt_host
+  if(_data.mqtt_port != "" || _data.mqtt_port != "1883"){
+     host += ':'+_data.mqtt_port;
+  }
+  //console.log("sendMQTT-host", host);
+  //console.log("sendMQTT-data", _data);
+  client_mqtt = mqtt.connect(host);
   client_mqtt.on('connect', function () {
-    client_mqtt.subscribe('maxi')
-    client_mqtt.publish('maxi', _data)
-  })
-  client_mqtt.on('message', function (topic, message) {
-    // message is Buffer
-    console.log("client_mqtt-message: ", message.toString())
-    client_mqtt.end()
-  })
+    client_mqtt.subscribe(_data.mqtt_topic);
+    client_mqtt.publish(_data.mqtt_topic, _data.command);
+  });
 
-  */
+  client_mqtt.on('message', function (topic, message) {
+    //console.log("client_mqtt-message: ", message.toString());
+    io.emit('send_command', "client_mqtt-message:"+message.toString());
+    //client_mqtt.end();
+  });
 }
