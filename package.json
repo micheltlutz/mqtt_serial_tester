@@ -1,13 +1,13 @@
 {
-  "name": "node_serial_test",
+  "name": "mqtt_serial_tester",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Tester for mqtt and serial",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Mike",
-  "license": "ISC",
+  "author": "Michel Anderson Lutz Teixeira",
+  "license": "MIT",
   "dependencies": {
     "express": "^4.15.3",
     "fs": "0.0.1-security",
