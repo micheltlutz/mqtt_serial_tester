@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-  <title>Serial Sender</title>
+  <title>Sender commands</title>
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
   <style>
@@ -13,11 +13,53 @@
   #messages { list-style-type: none; margin: 0; margin-bottom: 60px; padding: 0; }
   #messages li { padding: 5px 10px; }
   #messages li:nth-child(odd) { background: #eee; }
+  fieldset{
+    padding: 10px;
+    margin: 5px;
+  }
   </style>
 </head>
 <body>
-  <center><h1>Enviar Comando Serial</h1></center>
-  <ul id="messages"></ul>
+  <center><h1>Enviar Comando</h1></center>
+  <label>Protocolo</label>
+  <select id="protocolo">
+    <option value="" selected>Selecione...</option>
+    <option value="mqtt">MQTT</option>
+    <option value="serial">Serial</option>
+  </select>
+  <!-- EXIBE QUANDO protocolo for mqtt -->
+  <fieldset id="mqtt_fields" style="display:none;">
+    <legend>Para MQTT:</legend>
+    <p>
+      <label>Host</label>
+      <input id="mqtt_host" type="text" placeholder="192.168.1.110"/>
+    </p>
+    <p>
+      <label>Porta</label>
+      <input id="mqtt_port" type="text" placeholder="1883"/>
+    </p>
+    <p>
+      <label>Topico</label>
+      <input id="mqtt_topic" type="text" placeholder="luz"/>
+    </p>
+  </fieldset>
+  <!-- EXIBE QUANDO protocolo for serial-->
+  <fieldset id="serial_fields" style="display:none;">
+    <legend>Para Serial:</legend>
+    <p>
+      <label>Path</label>
+      <input id="serial_path" type="text" placeholder="/dev/tty.usbmodem1411"/>
+    </p>
+    <p>
+      <label>Bound Rate</label>
+      <input id="serial_boundrate" type="text" placeholder="9600"/>
+    </p>
+  </fieldset>
+  <fieldset>
+    <legend>Saída de dados</legend>
+    <ul id="messages"></ul>
+  </fieldset>
+
   <form action="">
     <!--input id="nick" type="text" placeholder="Digite o nome"/-->
     <input id="command" type="text" placeholder="Digite o comando"/>
@@ -26,43 +68,70 @@
   <script>
   $(function () {
     var socket = io();
-    /*
-    var nome = "";
+    var protocolo = $('#protocolo').val();
 
-    if(nome == ""){
-        $('#messages').hide();
-        $('#command').hide();
-        $('#nick').show();
-    } else {
-      $('#messages').show();
-      $('#command').show();
-      $('#nick').hide();
-    }*/
+    verificaProtocolo(protocolo);
+    
+    function verificaProtocolo(_protocolo)
+    {
+      switch (_protocolo) {
+        case "mqtt":
+          $("#mqtt_fields").toggle();
+          $("#serial_fields").hide();
+        break;
+        case "serial":
+          $("#serial_fields").toggle();
+          $("#mqtt_fields").hide();
+        break;
+        default:
+          $("#serial_fields").hide();
+          $("#mqtt_fields").hide();
+        break;
+      }
+    }
+
+    $('#protocolo').change(function(){
+      console.log("CHANGE", );
+      protocolo = $(this).val();
+      verificaProtocolo(protocolo);
+    });
+
     $('form').submit(function(){
       var msg = $('#command').val();
-      //if(msg != ""){
-        socket.emit('send_serial_command', msg);
-        console.log("HTML msg:", msg);
-        $('#command').val('');
+      var command = {"type": protocolo, "command": msg};
 
-      /*} else {
-        $('#messages').show();
-        $('#command').show();
-        $('#nick').hide();
-        name = $('#nick').val();
-        socket.emit('send_name', $('#nick').val());
-        $('#command').val('');
-        $('#nick').val('');
-      }*/
+      switch (protocolo) {
+        case "mqtt":
+          command.mqtt_host = $("#mqtt_host").val();
+          command.mqtt_port = $("#mqtt_port").val();
+          command.mqtt_topic = $("#mqtt_topic").val();
+        break;
+        case "serial":
+          command.serial_path = $("#serial_path").val();
+          command.serial_boundrate = $("#serial_boundrate").val();
+        break;
+        default:
+          alert("Preencha os campos");
+        break;
+      }
+
+
+
+      console.log("HTML msg:", msg);
+      console.log("HTML command:", command);
+
+      socket.emit('send_command', command);
+
+      $('#command').val('');
       return false;
     });
 
-    socket.on('send_serial_command', function(msg){
-      console.log("RECEBIDO: ", msg)
+    socket.on('send_command', function(msg){
+      console.log("RECEBIDO: ", msg);
       $('#messages').append($('<li>').text(msg));
       window.scrollTo(0, document.body.scrollHeight);
     });
   });
-</script>
+  </script>
 </body>
 </html>

@@ -52,9 +52,8 @@ io.on('connection', function(socket){
     }
 
 
-    console.log(socket.handshake.issued+': ' + _command);
-
-    io.emit('send_serial_command', socket.handshake.issued+": " +_command);
+    console.log(socket.handshake.issued+': ' + JSON.stringify(_command));
+    io.emit('send_serial_command', socket.handshake.issued+": " +JSON.stringify(_command));
 
     if(serialConnection.oppning != false){
       console.log(serialConnection.oppning);
